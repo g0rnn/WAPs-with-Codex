@@ -45,12 +45,12 @@ https://waps.im
 <table>
   <tr>
     <td align="center">
-       <img src="https://github.com/kangrae-jo.png" width="120px;"/>   
+        <img src="https://github.com/kangrae-jo.png" width="120px;"/>   
         <br />
         <a href="https://github.com/kangrae-jo" title="Code"><b>kangrae-jo</b></a>
     </td>
     <td align="center">
-       <img src="https://github.com/g0rnn.png" width="120px;"/>   
+        <img src="https://github.com/g0rnn.png" width="120px;"/>   
         <br />
         <a href="https://github.com/g0rnn" title="Code"><b>g0rnn</b></a>
     </td>
@@ -65,13 +65,13 @@ https://waps.im
         <a href="https://github.com/daimlee" title="Code"><b>daimlee</b></a>
     </td>
     <td align="center">
-       <img src="https://github.com/SH-MooDy.png" width="120px;"/>   
-        <br />
+        <img src="https://github.com/SH-MooDy.png" width="120px;"/>   
+        <br/>
         <a href="https://github.com/SH-MooDy" title="Code"><b>SH-MooDy</b></a>
     </td>
     <td align="center">
         <img src="https://github.com/rlaexram.png" width="120px;"/> 
-        <br />
+        <br/>
         <a href="https://github.com/rlaexram" title="Code"><b>rlaexram</b></a>
     </td> 
   </tr>
@@ -87,7 +87,6 @@ https://waps.im
     <td align="center"><b>BE</b></td>
     <td align="center"><b>BE</b></td>
     <td align="center"><b>BE</b></td>
-    <td align="center"><b>FE</b></td>
     <td align="center"><b>FE</b></td>
     <td align="center"><b>DE</b></td>
   </tr>
