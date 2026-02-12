@@ -55,8 +55,13 @@ https://waps.im
         <a href="https://github.com/g0rnn" title="Code"><b>g0rnn</b></a>
     </td>
     <td align="center">
-        <img src="https://github.com/daimlee.png" width="120px;"/>   
-        <br/>
+       <img src="https://github.com/squareCaaat.png" width="120px;"/>   
+        <br />
+        <a href="https://github.com/squareCaaat" title="Code"><b>squareCaaat</b></a>
+    </td>
+    <td align="center">
+       <img src="https://github.com/daimlee.png" width="120px;"/>   
+        <br />
         <a href="https://github.com/daimlee" title="Code"><b>daimlee</b></a>
     </td>
     <td align="center">
@@ -73,6 +78,7 @@ https://waps.im
   <tr>
     <td align="center"><b>조강래</b></td>
     <td align="center"><b>김균호</b></td>
+    <td align="center"><b>윤회성</b></td>
     <td align="center"><b>이수빈</b></td>
     <td align="center"><b>이승훈</b></td>
     <td align="center"><b>김예람</b></td>
@@ -80,7 +86,7 @@ https://waps.im
   <tr>
     <td align="center"><b>BE</b></td>
     <td align="center"><b>BE</b></td>
-    <td align="center"><b>FE</b></td>
+    <td align="center"><b>BE</b></td>
     <td align="center"><b>FE</b></td>
     <td align="center"><b>DE</b></td>
   </tr>
@@ -90,13 +96,13 @@ https://waps.im
 <table>
   <tr>
     <td align="center">
-        <img src="https://github.com/2siyeon.png" width="120px;"/>   
-        <br/>
+       <img src="https://github.com/2siyeon.png" width="120px;"/>   
+        <br />
         <a href="https://github.com/2siyeon" title="Code"><b>2siyeon</b></a>
     </td>
     <td align="center">
-        <img src="https://github.com/seizethedayunhui.png" width="120px;"/>   
-        <br/>
+       <img src="https://github.com/seizethedayunhui.png" width="120px;"/>   
+        <br />
         <a href="https://github.com/seizethedayunhui" title="Code"><b>seizethedayunhui</b></a>
     </td>
   </tr>
