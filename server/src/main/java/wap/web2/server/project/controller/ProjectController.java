@@ -97,25 +97,15 @@ public class ProjectController {
     @GetMapping("/{projectId}")
     public ResponseEntity<?> getProject(@PathVariable("projectId") Long projectId,
                                         @CurrentUser UserPrincipal userPrincipal) {
-        try {
-            ProjectDetailsResponse projectDetails = projectService.getProjectDetails(projectId, userPrincipal);
-            return ResponseEntity.ok(projectDetails);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        ProjectDetailsResponse projectDetails = projectService.getProjectDetails(projectId, userPrincipal);
+        return ResponseEntity.ok(projectDetails);
     }
 
     @GetMapping("/{projectId}/update")
     public ResponseEntity<?> getProjectDetailsForUpdate(@PathVariable("projectId") Long projectId,
                                                         @CurrentUser UserPrincipal userPrincipal) {
-        try {
-            // 프로젝트 상세 정보를 가져오는 서비스 호출
-            ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (IllegalArgumentException ex) {
-            // 유효하지 않은 유저 ID
-            return ResponseEntity.status(403).body("수정 권한이 없습니다.");
-        }
+        ProjectDetailsResponse response = projectService.getProjectDetailsForUpdate(projectId, userPrincipal);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("{projectId}")
@@ -142,14 +132,8 @@ public class ProjectController {
 
     @DeleteMapping("{projectId}")
     public ResponseEntity<?> deleteProject(@PathVariable("projectId") Long projectId, @CurrentUser UserPrincipal user) {
-        try {
-            projectService.delete(projectId, user);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-        }
+        projectService.delete(projectId, user);
+        return ResponseEntity.noContent().build();
     }
 
 }

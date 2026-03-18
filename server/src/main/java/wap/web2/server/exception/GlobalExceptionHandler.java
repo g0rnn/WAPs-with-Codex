@@ -31,6 +31,18 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ErrorCode.UNAUTHORIZED, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException ex,
+                                                                  HttpServletRequest request) {
+        return buildErrorResponse(ErrorCode.FORBIDDEN, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ErrorResponse> handleConflictException(ConflictException ex,
+                                                                 HttpServletRequest request) {
+        return buildErrorResponse(ErrorCode.CONFLICT, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex,
                                                                 HttpServletRequest request) {

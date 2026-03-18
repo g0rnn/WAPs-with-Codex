@@ -7,6 +7,7 @@ import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.comment.dto.request.CommentCreateRequest;
 import wap.web2.server.comment.entity.Comment;
 import wap.web2.server.comment.repository.CommentRepository;
+import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
 import wap.web2.server.project.entity.Project;
@@ -38,7 +39,7 @@ public class CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] User not found"));
 
         if (!comment.isOwner(user)) {
-            throw new IllegalArgumentException("[ERROR] Is not your comment");
+            throw new ForbiddenException("[ERROR] Is not your comment");
         }
         commentRepository.delete(comment);
     }

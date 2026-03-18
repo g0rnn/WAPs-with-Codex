@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import wap.web2.server.global.security.UserPrincipal;
 import wap.web2.server.aws.AwsUtils;
+import wap.web2.server.exception.ForbiddenException;
 import wap.web2.server.exception.ResourceNotFoundException;
 import wap.web2.server.member.entity.User;
 import wap.web2.server.member.repository.UserRepository;
@@ -133,7 +134,7 @@ public class ProjectService {
                 .orElseThrow(() -> new ResourceNotFoundException("프로젝트가 없습니다."));
 
         if (!project.getUser().getId().equals(user.getId())) {
-            throw new IllegalArgumentException("수정 권한이 없습니다.");
+            throw new ForbiddenException("수정 권한이 없습니다.");
         }
 
         return ProjectDetailsResponse.from(project);
