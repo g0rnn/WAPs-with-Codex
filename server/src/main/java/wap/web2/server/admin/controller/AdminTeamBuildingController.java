@@ -32,23 +32,15 @@ public class AdminTeamBuildingController {
     @PostMapping("/building/run")
     @Operation(summary = "팀 생성하기", description = "팀 지원과 팀원 모집이 완료되면 팀을 생성합니다.")
     public ResponseEntity<?> makeTeam() {
-        try {
-            adminTeamBuildingService.makeTeam();
-            return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 분배 실패" + e.getMessage());
-        }
+        adminTeamBuildingService.makeTeam();
+        return ResponseEntity.ok().body("[INFO ] 성공적으로 분배하였습니다.");
     }
 
     @GetMapping("/building/status")
     @Operation(summary = "팀빌딩 진행 상태 확인", description = "팀빌딩 기능의 상태를 반환합니다.")
     public ResponseEntity<?> getStatus() {
-        try {
-            TeamBuildingStatus status = adminTeamBuildingService.getStatus();
-            return ResponseEntity.ok().body(TeamBuildingMetaStatusResponse.of(status));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("[ERROR] 확인 실패" + e.getMessage());
-        }
+        TeamBuildingStatus status = adminTeamBuildingService.getStatus();
+        return ResponseEntity.ok().body(TeamBuildingMetaStatusResponse.of(status));
     }
 
     // TODO: status request를 역직렬화할 때 예외가 발생한다면

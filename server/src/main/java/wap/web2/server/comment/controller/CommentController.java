@@ -1,7 +1,6 @@
 package wap.web2.server.comment.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,12 +31,8 @@ public class CommentController {
     @DeleteMapping("/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable("commentId") Long commentId,
                                                 @CurrentUser UserPrincipal userPrincipal) {
-        try {
-            commentService.delete(commentId, userPrincipal);
-            return ResponseEntity.ok("댓글이 삭제되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        }
+        commentService.delete(commentId, userPrincipal);
+        return ResponseEntity.ok("댓글이 삭제되었습니다.");
     }
 
 }

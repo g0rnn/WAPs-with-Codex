@@ -42,12 +42,8 @@ public class UserController {
     @PostMapping("/role/{role}")
     public ResponseEntity<?> setMyRole(@CurrentUser UserPrincipal userPrincipal,
                                        @PathVariable("role") String role) {
-        try {
-            userService.setRole(userPrincipal, role);
-            return ResponseEntity.ok("회원 등록에 성공했습니다!");
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("회원 등록에 실패했습니다!");
-        }
+        userService.setRole(userPrincipal, role);
+        return ResponseEntity.ok("회원 등록에 성공했습니다!");
     }
 
     @GetMapping("/role")

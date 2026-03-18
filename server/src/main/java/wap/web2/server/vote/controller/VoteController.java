@@ -32,19 +32,11 @@ public class VoteController {
     @PostMapping
     public ResponseEntity<?> voteProjects(@CurrentUser UserPrincipal userPrincipal,
                                           @RequestBody @Valid VoteRequest voteRequest) {
-        try {
-            String role = userPrincipal.getUserRole()
-                    .orElseThrow(() -> new IllegalArgumentException("[ERROR] 사용자의 권한 정보가 존재하지 않습니다."));
+        String role = userPrincipal.getUserRole()
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 사용자의 권한 정보가 존재하지 않습니다."));
 
-            voteService.vote(userPrincipal.getId(), role, voteRequest);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        voteService.vote(userPrincipal.getId(), role, voteRequest);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/{semester}/projects")
@@ -57,14 +49,10 @@ public class VoteController {
     @GetMapping("/now")
     @Operation(summary = "현재 학기 투표 상태 보기", description = "현재 학기에 '열린 투표'인지, '내가 투표했는지', '닫힌 투표인지'를 반환한다")
     public ResponseEntity<?> getVoteInfo(@CurrentUser UserPrincipal userPrincipal) {
-        try {
-            // 해당 api는 "현재 학기"로 고정이다.
-            String semester = SemesterGenerator.generateSemester();
-            VoteInfoResponse response = voteService.getVoteInfo(userPrincipal, semester);
-            return ResponseEntity.ok().body(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        // 해당 api는 "현재 학기"로 고정이다.
+        String semester = SemesterGenerator.generateSemester();
+        VoteInfoResponse response = voteService.getVoteInfo(userPrincipal, semester);
+        return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("/result")

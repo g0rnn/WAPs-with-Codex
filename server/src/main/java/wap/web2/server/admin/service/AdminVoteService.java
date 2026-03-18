@@ -56,7 +56,7 @@ public class AdminVoteService {
     @Transactional
     public void closeVote(String semester, Long userId) {
         VoteMeta voteMeta = voteMetaRepository.findBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 현재 학기의 투표가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("[ERROR] 현재 학기의 투표가 존재하지 않습니다."));
 
         voteMeta.close(userId);
     }
@@ -78,7 +78,7 @@ public class AdminVoteService {
     @Transactional
     public VoteResultsVisibility getVisibility(String semester) {
         Boolean isPublic = voteMetaRepository.findIsResultPublicBySemester(semester)
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 투표가 생성되지 않았습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("[ERROR] 투표가 생성되지 않았습니다."));
         return new VoteResultsVisibility(isPublic);
     }
 
