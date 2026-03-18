@@ -2,21 +2,14 @@
 
 ## 1. Project Overview
 
-This repository contains **WAPs**, a web service designed to support club operations, including:
+This repository contains **WAPs**, a backend web service for:
 
 * Project posting and management
 * Team building
 * Voting for outstanding projects
 
-Codex operates as an engineering assistant in this repository.
-Its responsibilities include:
-
-* Understanding existing code
-* Adding small features
-* Fixing bugs
-* Writing and improving tests
-
-The primary goal is to maintain **correctness, consistency, and stability** of the service.
+Codex operates as an engineering assistant and must follow **strict, enforceable rules**.
+All changes must be **verifiable, testable, and non-breaking**.
 
 ---
 
@@ -30,12 +23,12 @@ The primary goal is to maintain **correctness, consistency, and stability** of t
 
 ---
 
-## 3. Repository Structure
+## 3. Repository Structure (Mandatory)
 
-* `controller` → Handles HTTP requests/responses (must remain thin)
-* `service` → Contains business logic
-* `repository` → Handles database access (JPA)
-* `dto` → Request/Response objects
+* `controller` → HTTP layer only
+* `service` → business logic only
+* `repository` → persistence only
+* `dto` → request/response models
 
 ---
 
@@ -53,101 +46,189 @@ The primary goal is to maintain **correctness, consistency, and stability** of t
 ./gradlew test
 ```
 
-Codex must always ensure that:
+### Quality Gate (MANDATORY)
 
-* The project builds successfully
-* All tests pass after changes
+Before completing any task, ALL must pass:
 
----
-
-## 5. Core Architectural Rules
-
-### Layering
-
-* Controllers must NOT contain business logic
-* Business logic must exist in the service layer
-* Repositories must only handle persistence
-
-### DTO Usage
-
-* Always use DTOs for API input/output
-* Do not expose internal data structures directly
+* [ ] Project builds successfully
+* [ ] All tests pass
+* [ ] No compilation warnings
 
 ---
 
-## 6. Voting System Constraints (Critical)
+## 5. Controller Rules (Strict)
 
-The voting system is a core feature of WAPs.
+Controllers MUST:
 
-Codex MUST ensure:
+* Only perform:
 
-* A user cannot vote multiple times for the same poll
-* Vote aggregation must remain consistent
-* Concurrency issues must be considered
-* Database-level constraints (e.g., unique `(user_id, poll_id)`) must not be broken
+  * request validation
+  * DTO mapping
+  * service calls
+  * HTTP response mapping
+
+Controllers MUST NOT:
+
+* Contain loops (`for`, `while`)
+* Contain business condition branching (`if` related to domain logic)
+* Access repository directly
+
+Allowed example:
+
+* null/format validation
+* authentication extraction
+
+Violation example:
+
+* vote duplication logic in controller ❌
 
 ---
 
-## 7. Error Handling (Future Work)
+## 6. Service Rules (Strict)
 
-This project does NOT yet have a standardized error handling system.
+Service layer MUST:
 
-Codex must:
+* Contain all business logic
+* Be the only layer coordinating multiple repositories
+* Use `@Transactional` for write operations
 
-* Avoid introducing inconsistent error response formats
-* Prefer simple and clear error handling
-* If introducing error handling, keep it minimal and consistent across endpoints
-* Do NOT design a full global exception system unless explicitly requested
+---
+
+## 7. Voting System Constraints (CRITICAL – MUST ENFORCE)
+
+### 7.1 Request Validation
+
+* A vote request MUST contain exactly 3 project IDs
+* All project IDs MUST be unique
+
+Example (invalid):
+
+```
+[101, 101, 101] ❌
+```
+
+---
+
+### 7.2 Database Constraints (MANDATORY)
+
+The database MUST enforce uniqueness:
+
+* `(user_id, poll_id, project_id)` must be UNIQUE
+
+Without this constraint, the implementation is considered incorrect.
+
+---
+
+### 7.3 Concurrency Guarantee
+
+Voting MUST be safe under concurrent requests.
+
+At least ONE of the following MUST exist:
+
+* DB unique constraint (required baseline)
+* OR pessimistic/optimistic locking
+
+---
+
+### 7.4 Required Tests
+
+The following tests are MANDATORY:
+
+* Duplicate vote test (same user, same poll)
+* Concurrent vote test (parallel requests)
+* Validation test (duplicate project IDs rejected)
+
+If these tests do not exist, the task is NOT complete.
 
 ---
 
 ## 8. Database Rules
 
-* Do NOT modify schema without explicit instruction
-* Maintain existing constraints and indexes
-* Consider transaction boundaries (`@Transactional`)
-* Prevent N+1 query problems
+* Schema changes are NOT allowed without explicit instruction
+* All list queries MUST use:
+
+  * pagination OR
+  * fetch join
 
 ---
 
-## 9. Logging
+## 9. N+1 Query Prevention (Enforceable)
 
-* Log important business events when necessary
-* Do NOT log sensitive information (passwords, tokens, etc.)
+For any repository method returning collections:
 
----
+* MUST use fetch join OR
+* MUST use batch size OR
+* MUST justify via comment
 
-## 10. Code Style & Design Rules
+Verification method:
 
-* Keep methods small and readable
-* Avoid unnecessary abstraction
-* Avoid ambiguous parameters such as:
-
-  * `foo(false)`
-  * `bar(null)`
-
-Prefer:
-
-* enums
-* clearly named methods
+* Enable SQL logging
+* No repeated SELECT per row allowed
 
 ---
 
-## 11. File & Module Size Rules
+## 10. Error Handling (Current Policy)
 
-* Keep files under ~500 lines when possible
-* If a file exceeds ~800 lines, split it into smaller modules
-* Prefer multiple focused classes over one large class
+Since no global system exists:
+
+* Controllers MUST return consistent response shape per endpoint
+* Do NOT mix:
+
+  * raw strings
+  * DTO responses
+
+Each endpoint must use ONE consistent response type.
 
 ---
 
-## 12. Testing Rules
+## 11. Logging Rules
 
-* Every new feature must include tests
-* Prefer integration tests for API behavior
-* Prefer full object comparison over field-by-field assertions
+The following MUST be logged:
 
-Example:
+* vote submission
+* vote failure
+* critical business actions
+
+The following MUST NOT be logged:
+
+* passwords
+* tokens
+* sensitive user data
+
+---
+
+## 12. Code Style Rules (Enforceable)
+
+### Method Size
+
+* Maximum: 30 lines
+
+### File Size
+
+* Soft limit: 500 lines
+* Hard limit: 800 lines → MUST split
+
+### Complexity
+
+* No nested `if` depth > 2
+
+---
+
+## 13. Testing Rules (Strict)
+
+### Required by Change Type
+
+| Change Type   | Required Tests                   |
+| ------------- | -------------------------------- |
+| Service logic | Unit test                        |
+| API change    | Integration test                 |
+| Voting logic  | Unit + Integration + Concurrency |
+
+---
+
+### Assertions
+
+* Prefer full object comparison:
 
 ```
 assertEquals(expected, actual);
@@ -155,59 +236,81 @@ assertEquals(expected, actual);
 
 ---
 
-## 13. Constraints (Do NOT)
+## 14. API Compatibility Rules
 
-Codex must NEVER:
-
-* Change API response formats without instruction
-* Modify database schema arbitrarily
-* Refactor unrelated code
-* Introduce breaking changes
-* Add large architectural changes without explicit request
+* Existing response format MUST NOT change
+* New fields MUST be additive only
+* Do NOT remove or rename fields
 
 ---
 
-## 14. Definition of Done
+## 15. Definition of Done (Strict)
 
-A task is complete only if:
+A task is complete ONLY if:
 
-* [ ] Requirements are fully satisfied
-* [ ] Existing functionality is not broken
-* [ ] All tests pass (`./gradlew test`)
-* [ ] New tests are added when needed
-* [ ] Code follows project conventions
-
----
-
-## 15. Working Process for Codex
-
-Codex must follow this workflow:
-
-1. Read and understand related files
-2. Identify affected areas
-3. Create a minimal change plan
-4. Implement changes with minimal scope
-5. Add or update tests
-6. Run tests
-7. Fix any failures
+* [ ] Requirements implemented
+* [ ] All tests pass
+* [ ] Required tests added
+* [ ] No rule in this document is violated
 
 ---
 
-## 16. Preferred Development Approach
+## 16. Change Size Policy
 
-* Prefer small, incremental changes
-* Avoid large, sweeping modifications
-* Prioritize readability and maintainability
+A change is considered "small" ONLY if:
+
+* ≤ 5 files modified
+* ≤ 300 lines added/changed
+
+If exceeded, the change MUST be split.
 
 ---
 
-## 17. Example Tasks
+## 17. Exception Process
 
-* Add project CRUD functionality
-* Improve vote validation logic
-* Prevent duplicate voting
-* Refactor service layer logic
-* Add missing test coverage
-* Fix API edge-case bugs
+If a rule must be violated:
+
+* The change MUST include a comment:
+
+```
+AGENTS_EXCEPTION: <reason>
+```
+
+Without this, the change is invalid.
+
+---
+
+## 18. Working Process (Mandatory)
+
+Codex MUST follow:
+
+1. Identify relevant files
+2. Plan minimal change
+3. Implement
+4. Add required tests
+5. Run tests
+6. Verify all rules
+
+---
+
+## 19. Priority Rules
+
+If conflicts occur:
+
+1. Voting system constraints
+2. Database constraints
+3. API compatibility
+4. Other rules
+
+---
+
+## 20. Summary
+
+This document defines **strict, enforceable rules**.
+
+Rules are NOT guidelines.
+They are **requirements**.
+
+Failure to comply means the task is incomplete.
 
 ---
