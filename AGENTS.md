@@ -8,7 +8,7 @@ This repository contains **WAPs**, a backend web service for:
 * Team building
 * Voting for outstanding projects
 
-Codex operates as an engineering assistant and must follow **strict, enforceable rules**.
+Codex operates as an engineering assistant and must follow **clear, enforceable, and practical rules**.
 All changes must be **verifiable, testable, and non-breaking**.
 
 ---
@@ -26,8 +26,8 @@ All changes must be **verifiable, testable, and non-breaking**.
 ## 3. Repository Structure (Mandatory)
 
 * `controller` → HTTP layer only
-* `service` → business logic only
-* `repository` → persistence only
+* `service` → business logic
+* `repository` → persistence (JPA)
 * `dto` → request/response models
 
 ---
@@ -48,148 +48,84 @@ All changes must be **verifiable, testable, and non-breaking**.
 
 ### Quality Gate (MANDATORY)
 
-Before completing any task, ALL must pass:
+Before completing any task:
 
 * [ ] Project builds successfully
 * [ ] All tests pass
-* [ ] No compilation warnings
+* [ ] No runtime errors introduced
 
 ---
 
-## 5. Controller Rules (Strict)
+## 5. Controller Rules
 
 Controllers MUST:
 
-* Only perform:
-
-  * request validation
-  * DTO mapping
-  * service calls
-  * HTTP response mapping
+* Handle request/response mapping
+* Perform input validation
+* Call service layer
 
 Controllers MUST NOT:
 
-* Contain loops (`for`, `while`)
-* Contain business condition branching (`if` related to domain logic)
+* Contain core business logic
 * Access repository directly
 
-Allowed example:
+Controllers MAY:
 
-* null/format validation
-* authentication extraction
-
-Violation example:
-
-* vote duplication logic in controller ❌
+* Use simple conditionals for validation or response mapping
+* Transform DTOs
 
 ---
 
-## 6. Service Rules (Strict)
+## 6. Service Rules
 
 Service layer MUST:
 
 * Contain all business logic
-* Be the only layer coordinating multiple repositories
-* Use `@Transactional` for write operations
+* Coordinate between repositories
+* Use `@Transactional` for write operations when necessary
 
 ---
 
-## 7. Voting System Constraints (CRITICAL – MUST ENFORCE)
-
-### 7.1 Request Validation
-
-* A vote request MUST contain exactly 3 project IDs
-* All project IDs MUST be unique
-
-Example (invalid):
-
-```
-[101, 101, 101] ❌
-```
-
----
-
-### 7.2 Database Constraints (MANDATORY)
-
-The database MUST enforce uniqueness:
-
-* `(user_id, poll_id, project_id)` must be UNIQUE
-
-Without this constraint, the implementation is considered incorrect.
-
----
-
-### 7.3 Concurrency Guarantee
-
-Voting MUST be safe under concurrent requests.
-
-At least ONE of the following MUST exist:
-
-* DB unique constraint (required baseline)
-* OR pessimistic/optimistic locking
-
----
-
-### 7.4 Required Tests
-
-The following tests are MANDATORY:
-
-* Duplicate vote test (same user, same poll)
-* Concurrent vote test (parallel requests)
-* Validation test (duplicate project IDs rejected)
-
-If these tests do not exist, the task is NOT complete.
-
----
-
-## 8. Database Rules
+## 7. Database Rules
 
 * Schema changes are NOT allowed without explicit instruction
-* All list queries MUST use:
-
-  * pagination OR
-  * fetch join
+* Maintain existing constraints and indexes
+* Consider transaction boundaries when modifying data
 
 ---
 
-## 9. N+1 Query Prevention (Enforceable)
+## 8. Query & Performance Guidelines
 
-For any repository method returning collections:
+* List queries SHOULD use pagination where applicable
+* Avoid obvious N+1 query patterns
 
-* MUST use fetch join OR
-* MUST use batch size OR
-* MUST justify via comment
+If N+1 is unavoidable:
 
-Verification method:
-
-* Enable SQL logging
-* No repeated SELECT per row allowed
+* Add a comment explaining the reason
+* Ensure the impact is limited (non-critical path or small dataset)
 
 ---
 
-## 10. Error Handling (Current Policy)
+## 9. Error Handling (Current State)
 
-Since no global system exists:
+This project does NOT yet have a global error handling system.
 
-* Controllers MUST return consistent response shape per endpoint
-* Do NOT mix:
+Codex must:
 
-  * raw strings
-  * DTO responses
-
-Each endpoint must use ONE consistent response type.
+* Keep error handling consistent within the same endpoint
+* Avoid mixing response formats (DTO vs raw string) within one API
+* Avoid introducing large error-handling frameworks unless requested
 
 ---
 
-## 11. Logging Rules
+## 10. Logging Rules
 
-The following MUST be logged:
+Log when necessary:
 
-* vote submission
-* vote failure
-* critical business actions
+* Key business actions (e.g., create/update operations)
+* Failures or unexpected states
 
-The following MUST NOT be logged:
+Do NOT log:
 
 * passwords
 * tokens
@@ -197,38 +133,42 @@ The following MUST NOT be logged:
 
 ---
 
-## 12. Code Style Rules (Enforceable)
+## 11. Code Style Guidelines
 
-### Method Size
+* Keep code readable and maintainable
+* Prefer clear naming over abbreviations
+* Avoid unnecessary abstraction
 
-* Maximum: 30 lines
+When introducing abstraction:
 
-### File Size
-
-* Soft limit: 500 lines
-* Hard limit: 800 lines → MUST split
-
-### Complexity
-
-* No nested `if` depth > 2
+* Ensure it improves readability or reuse
+* Avoid single-use helper methods unless justified
 
 ---
 
-## 13. Testing Rules (Strict)
+## 12. Testing Rules
+
+### General
+
+* New or modified logic SHOULD include tests
+* Prefer integration tests for API behavior
+* Unit tests SHOULD cover core service logic
+
+---
 
 ### Required by Change Type
 
-| Change Type   | Required Tests                   |
-| ------------- | -------------------------------- |
-| Service logic | Unit test                        |
-| API change    | Integration test                 |
-| Voting logic  | Unit + Integration + Concurrency |
+| Change Type   | Recommended Tests |
+| ------------- | ----------------- |
+| Service logic | Unit test         |
+| API change    | Integration test  |
+| Bug fix       | Reproduction test |
 
 ---
 
 ### Assertions
 
-* Prefer full object comparison:
+Prefer full object comparison when possible:
 
 ```
 assertEquals(expected, actual);
@@ -236,81 +176,106 @@ assertEquals(expected, actual);
 
 ---
 
-## 14. API Compatibility Rules
+## 13. API Compatibility Rules
 
-* Existing response format MUST NOT change
-* New fields MUST be additive only
-* Do NOT remove or rename fields
+* Existing response formats MUST NOT be broken
+* New fields SHOULD be added in a backward-compatible way
+* Do NOT remove or rename existing fields
 
 ---
 
-## 15. Definition of Done (Strict)
+## 14. Definition of Done
 
-A task is complete ONLY if:
+A task is complete if:
 
-* [ ] Requirements implemented
+* [ ] Requirements are implemented
+* [ ] Existing functionality is not broken
 * [ ] All tests pass
-* [ ] Required tests added
-* [ ] No rule in this document is violated
+* [ ] Code follows project conventions
 
 ---
 
-## 16. Change Size Policy
+## 15. Change Size Guidelines
 
-A change is considered "small" ONLY if:
+Prefer small, incremental changes.
 
-* ≤ 5 files modified
-* ≤ 300 lines added/changed
+If a change is large:
 
-If exceeded, the change MUST be split.
+* Break it into multiple steps when possible
+* Ensure each step remains functional
 
 ---
 
-## 17. Exception Process
+## 16. Exception Process
 
 If a rule must be violated:
 
-* The change MUST include a comment:
+* Add a comment:
 
 ```
 AGENTS_EXCEPTION: <reason>
 ```
 
-Without this, the change is invalid.
+* Keep the scope minimal
+* Explain why the exception is necessary
 
 ---
 
-## 18. Working Process (Mandatory)
+## 17. Working Process (Mandatory)
 
 Codex MUST follow:
 
 1. Identify relevant files
-2. Plan minimal change
-3. Implement
-4. Add required tests
-5. Run tests
-6. Verify all rules
+2. Understand current behavior
+3. Plan minimal changes
+4. Implement changes
+5. Add or update tests
+6. Run tests
+7. Verify no regressions
 
 ---
 
-## 19. Priority Rules
+## 18. Priority Rules
 
 If conflicts occur:
 
-1. Voting system constraints
-2. Database constraints
-3. API compatibility
+1. API compatibility
+2. Database integrity
+3. System stability
 4. Other rules
+
+---
+
+## 19. Continuous Improvement Note (IMPORTANT)
+
+While working on the codebase, Codex SHOULD:
+
+* Identify structural limitations
+* Detect potential design issues
+* Suggest better patterns or architectures
+
+If such observations exist, Codex MUST:
+
+* Add them at the end of the response as a separate section
+* Clearly distinguish them from the main task result
+
+Example:
+
+```
+[Additional Suggestions]
+- Current voting logic may suffer from race conditions due to lack of DB constraints.
+- Consider introducing a unique constraint or transactional redesign.
+```
+
+These suggestions MUST NOT block task completion, but SHOULD be provided when relevant.
 
 ---
 
 ## 20. Summary
 
-This document defines **strict, enforceable rules**.
+This document defines **practical and enforceable engineering rules**.
 
-Rules are NOT guidelines.
-They are **requirements**.
-
-Failure to comply means the task is incomplete.
+Rules are intended to guide consistent development without blocking normal work.
+When necessary, use the exception process responsibly.
 
 ---
