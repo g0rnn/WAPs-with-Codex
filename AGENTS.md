@@ -1,4 +1,4 @@
-# AGENTS.md (v3.1 – Practical & Enforceable)
+# AGENTS.md
 
 ## 1. Project Overview
 
