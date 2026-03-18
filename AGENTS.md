@@ -1,4 +1,4 @@
-# AGENTS.md
+# AGENTS.md (v3.1 – Practical & Enforceable)
 
 ## 1. Project Overview
 
@@ -133,7 +133,36 @@ Do NOT log:
 
 ---
 
-## 11. Code Style Guidelines
+## 11. Code Style Guidelines (STRICT)
+
+### Control Flow
+
+* Prefer `if-else` over ternary operators
+* Use early return patterns to improve readability
+
+Example:
+
+```
+if (invalid) {
+    return;
+}
+```
+
+---
+
+### DTO Rules
+
+* All DTOs MUST be implemented using `record`
+
+Example:
+
+```
+public record UserResponse(Long id, String name) {}
+```
+
+---
+
+### General Style
 
 * Keep code readable and maintainable
 * Prefer clear naming over abbreviations
@@ -206,7 +235,46 @@ If a change is large:
 
 ---
 
-## 16. Exception Process
+## 16. Branch & Workflow Rules (MANDATORY)
+
+Before starting any implementation:
+
+* Codex MUST ask the user for approval before creating a new branch
+* Codex MUST NOT start coding until approval is explicitly given
+
+---
+
+## 17. PR & Commit Message Rules (MANDATORY)
+
+### Language
+
+* All commit messages MUST be written in Korean
+* All pull request titles and descriptions MUST be written in Korean
+
+---
+
+### Commit Message Format
+
+```
+<타입>: <변경 요약>
+
+예:
+feat: 투표 API 중복 검증 로직 추가
+fix: 프로젝트 생성 시 null 예외 수정
+```
+
+---
+
+### PR Description MUST include
+
+* 변경 사항 (Summary)
+* 테스트 내용 (Tests)
+* 영향 범위 (Impact)
+* 추가 제안 (Additional Suggestions, if applicable)
+
+---
+
+## 18. Exception Process
 
 If a rule must be violated:
 
@@ -221,32 +289,22 @@ AGENTS_EXCEPTION: <reason>
 
 ---
 
-## 17. Working Process (Mandatory)
+## 19. Working Process (MANDATORY)
 
 Codex MUST follow:
 
 1. Identify relevant files
 2. Understand current behavior
-3. Plan minimal changes
-4. Implement changes
-5. Add or update tests
-6. Run tests
-7. Verify no regressions
+3. Ask for branch creation approval
+4. Plan minimal changes
+5. Implement changes
+6. Add or update tests
+7. Run tests
+8. Verify no regressions
 
 ---
 
-## 18. Priority Rules
-
-If conflicts occur:
-
-1. API compatibility
-2. Database integrity
-3. System stability
-4. Other rules
-
----
-
-## 19. Continuous Improvement Note (IMPORTANT)
+## 20. Continuous Improvement Note (IMPORTANT)
 
 While working on the codebase, Codex SHOULD:
 
@@ -267,11 +325,9 @@ Example:
 - Consider introducing a unique constraint or transactional redesign.
 ```
 
-These suggestions MUST NOT block task completion, but SHOULD be provided when relevant.
-
 ---
 
-## 20. Summary
+## 21. Summary
 
 This document defines **practical and enforceable engineering rules**.
 
